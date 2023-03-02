@@ -3,7 +3,7 @@ CREATE DATABASE chat;
 USE chat;
 
 CREATE TABLE messages (
-  /* Describe your table here.*/
+  id INT, username VARCHAR(20), text VARCHAR(120), room VARCHAR(20), createdAt DATETIME
 );
 
 /* Create other tables and define schemas for them here! */
@@ -15,3 +15,4 @@ CREATE TABLE messages (
  *    mysql -u root < server/schema.sql
  *  to create the database and the tables.*/
 
+-- // text, username, id, room
