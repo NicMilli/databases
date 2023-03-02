@@ -14,6 +14,13 @@ module.exports = {
       //ToDo add error handling
   }, // a function which handles a get request for all messages
   post: function (req, res) {
+    //console.log('REQ BODY ---->', req);
+    models.createAsync(req.body)
+      .then( (data) => {
+        res.status(201);
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(data));
+      });
     //console.log('Models here ----->', req);
   } // a function which handles posting a message to the database
 };

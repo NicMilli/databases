@@ -12,5 +12,3 @@ module.exports.dbConnection = mysql.createConnection({
 // user: 'root', password: ''
 // OR
 // user: 'root', password: 'some_password_you_created_at_install'
-
-

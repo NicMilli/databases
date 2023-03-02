@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 /* You'll need to have MySQL running and your Node server running
  * for these tests to pass. */
 
@@ -30,14 +31,15 @@ describe('Persistent Node Chat Server', () => {
 
   it('Should insert posted messages to the DB', (done) => {
     const username = 'Valjean';
-    const message = 'In mercy\'s name, three days is all I need.';
+    const text = 'In mercy\'s name, three days is all I need.';
     const room = 'Hello';
     // Create a user on the chat server database.
-    axios.post(`${API_URL}/users`, { username })
-      .then(() => {
-        // Post a message to the node chat server:
-        return axios.post(`${API_URL}/messages`, { username, message, room });
-      })
+    // axios.post(`${API_URL}/users`, { username })
+    //   .then(() => {
+    //     // Post a message to the node chat server:
+    //     return axios.post(`${API_URL}/messages`, { username, text, room });
+    //   })
+    axios.post(`${API_URL}/messages`, { username, text, room })
       .then(() => {
         // Now if we look in the database, we should find the posted message there.
 
@@ -54,7 +56,7 @@ describe('Persistent Node Chat Server', () => {
           expect(results.length).toEqual(1);
 
           // TODO: If you don't have a column named text, change this test.
-          expect(results[0].text).toEqual(message);
+          expect(results[0].text).toEqual(text);
           done();
         });
       })
@@ -69,7 +71,7 @@ describe('Persistent Node Chat Server', () => {
     const queryArgs = [];
     /* TODO: The exact query string and query args to use here
      * depend on the schema you design, so I'll leave them up to you. */
-    dbConnection.query(queryString, queryArgs, (err) => {
+    dbConnection.query(queryString, queryArgs, (err, results) => {
       if (err) {
         throw err;
       }
@@ -79,13 +81,41 @@ describe('Persistent Node Chat Server', () => {
       axios.get(`${API_URL}/messages`)
         .then((response) => {
           const messageLog = response.data;
-          expect(messageLog[0].text).toEqual(message);
-          expect(messageLog[0].room).toEqual(room);
+          expect(messageLog[0].text).toEqual(results[0].text);
+          expect(messageLog[0].room).toEqual(results[0].room);
           done();
         })
         .catch((err) => {
           throw err;
         });
     });
+  });
+
+  it('Should auto-increment the message ID', (done) => {
+    const tablename = 'messages';
+    dbConnection.query(`truncate ${tablename}`, done);
+    const username = 'Bobby';
+    const text = 'I like shrimp.';
+    const room = 'Yessss';
+    axios.post(`${API_URL}/messages`, { username, text, room })
+    .then(() => { return axios.post(`${API_URL}/messages`, { username, text, room }); })
+    .then(() => { return axios.post(`${API_URL}/messages`, { username, text, room }); })
+    .then(() => { return axios.post(`${API_URL}/messages`, { username, text, room }); })
+    .then(() => { return axios.post(`${API_URL}/messages`, { username, text, room }); })
+      .then(() => {
+        const queryString = 'SELECT * FROM messages';
+        const queryArgs = [];
+
+        dbConnection.query(queryString, queryArgs, (err, results) => {
+          if (err) {
+            throw err;
+          }
+
+          expect(results.length).toEqual(5);
+
+          expect(results[4].id).toEqual(5);
+          done();
+        });
+      });
   });
 });
