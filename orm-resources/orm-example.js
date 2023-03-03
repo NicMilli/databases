@@ -11,14 +11,16 @@ var db = new Sequelize('chatter', 'root', '');
 /* first define the data structure by giving property names and datatypes
  * See http://sequelizejs.com for other datatypes you can use besides STRING. */
 var User = db.define('User', {
-  username: Sequelize.STRING
+  user: Sequelize.STRING
 });
 
 var Message = db.define('Message', {
-  userid: Sequelize.INTEGER,
+  user: Sequelize.INTEGER,  // should be id instead of user?
   text: Sequelize.STRING,
-  roomname: Sequelize.STRING
+  room: Sequelize.STRING
 });
+
+// TODO: Declare the relationship between User and Message so that ORM can interact with them in either direction
 
 /* Sequelize comes with built in support for promises
  * making it easy to chain asynchronous operations together */

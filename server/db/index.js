@@ -1,10 +1,30 @@
 var mysql = require('mysql2');
 
-module.exports.dbConnection = mysql.createConnection({
-  user: 'root',
-  password: '',
-  database: 'chat',
+var Sequelize = require('sequelize');
+var db = new Sequelize('chat', 'root', '');
+
+var User = db.define('User', {
+  username: Sequelize.STRING
 });
+
+var Message = db.define('Message', {
+  text: Sequelize.STRING,
+  room: Sequelize.STRING
+});
+
+User.hasMany(Message);
+Message.belongsTo(User);
+
+User.sync();
+Message.sync();
+
+module.exports.Message = Message;
+module.exports.User = User;
+// module.exports.dbConnection = mysql.createConnection({
+//   user: 'root',
+//   password: '',
+//   database: 'chat',
+// });
 
 // Create a database connection and export it from this file.
 // Confirm that the credentials supplied for the connection are correct.
